@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zentora - Офлайн платформа для Android</title>
+    <style>
+        :root {
+            --dark-bg: #0b0815;
+            --purple-glow: #6a4cba;
+            --light-purple: #ae8aff;
+            --text-main: #e0e0ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Динамический градиент с эффектом космоса */
+            background: radial-gradient(circle at top left, #1d1433, #0a0715);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Анимированные частицы на фоне */
+        .particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(174, 138, 255, 0.2);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Карточка сайта - эффект стекла */
+        .glass-card {
+            background: rgba(20, 15, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(174, 138, 255, 0.15);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(106, 76, 186, 0.1);
+            transition: transform 0.3s;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Логотип для клика */
+        .logo-container {
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s;
+            position: relative;
+        }
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+        .logo-container:active {
+            transform: scale(0.95);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(106, 76, 186, 0.8);
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ae8aff, #5b7bff, #ae8aff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .subtitle {
+            color: #8a8aba;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* Секция Описания */
+        .about {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--purple-glow);
+            border-radius: 0 15px 15px 0;
+            line-height: 1.7;
+        }
+
+        /* Галерея скриншотов */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            background: rgba(10, 10, 30, 0.8);
+            border: 1px solid rgba(80, 70, 150, 0.4);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(100, 50, 200, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Кнопки */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(145deg, #4a33a8, #26136e);
+            color: white;
+            text-decoration: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(74, 51, 168, 0.4);
+            border: 1px solid rgba(200, 180, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 40px rgba(100, 60, 255, 0.6);
+            background: linear-gradient(145deg, #5a43b8, #3a2a8e);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Секретная кнопка */
+        .secret-btn-wrapper {
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            display: flex;
+            justify-content: center;
+        }
+        .secret-btn-wrapper.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .btn-secret {
+            background: linear-gradient(145deg, #e68a00, #b35f00);
+            box-shadow: 0 0 25px rgba(230, 138, 0, 0.4);
+            max-width: 300px;
+            animation: pulse-gold 2s infinite;
+        }
+        .btn-secret:hover {
+            box-shadow: 0 0 50px rgba(255, 160, 0, 0.7);
+        }
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 15px rgba(230, 138, 0, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(230, 138, 0, 0.8); }
+            100% { box-shadow: 0 0 15px rgba(230, 138, 0, 0.4); }
+        }
+
+        .socials {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .social-btn {
+            background: rgba(40, 30, 90, 0.6);
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: #d0d0ff;
+            border: 1px solid rgba(150, 130, 255, 0.1);
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+        .social-btn:hover {
+            background: rgba(70, 50, 140, 0.8);
+            transform: scale(1.05);
+        }
+
+        .support-email {
+            text-align: center;
+            margin-top: 25px;
+            border-top: 1px solid rgba(100, 80, 200, 0.1);
+            padding-top: 20px;
+            font-size: 0.9rem;
+            color: #6666a0;
+        }
+        .support-email a { color: #b8a8ff; text-decoration: none; }
+        .support-email a:hover { text-decoration: underline; }
+
+        /* Модальное окно для Flappy Bird */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 0 50px var(--purple-glow);
+            border: 1px solid #5b4a8a;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .close-modal {
+            cursor: pointer;
+            font-size: 2rem;
+            line-height: 1;
+            color: #ff6b6b;
+            transition: 0.3s;
+        }
+        .close-modal:hover { transform: rotate(90deg); color: #ff0000; }
+        #gameCanvas {
+            background: #0f172a;
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 400 / 600;
+            border-radius: 10px;
+            margin: 0 auto;
+            border: 2px solid #333;
+        }
+        .game-controls {
+            text-align: center;
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        .game-controls button {
+            margin-top: 5px;
+            padding: 5px 15px;
+            background: var(--purple-glow);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фоновые частицы -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Модальное окно игры -->
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🐦 Flappy Zentora</h3>
+                <span class="close-modal" id="closeModalBtn">&times;</span>
+            </div>
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            <div class="game-controls">
+                Нажми на экран игры (или пробел), чтобы лететь.
+                <button id="restartGameBtn">Перезапустить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container glass-card">
+        <header>
+            <div class="logo-container" id="logoClick">
+                <h1>ZENTORA</h1>
+            </div>
+            <div class="subtitle">Твоя вселенная творения без интернета</div>
+        </header>
+
+        <section class="about">
+            <h2 style="color: var(--light-purple); margin-bottom: 10px;">Что такое Zentora?</h2>
+            <p><strong style="color:#fff;">Zentora</strong> — это офлайн-платформа для создания игр и виртуальных миров, разработанная специально для <strong>Android</strong>. Представьте себе Roblox, но работающий без подключения к сети!</p>
+            <p style="margin-top: 10px;">Стройте свои уровни, создавайте персонажей и играйте в готовые мини-игры где угодно. Всё, что нужно для творчества, у вас в кармане.</p>
+        </section>
+
+        <!-- Галерея скриншотов -->
+        <section class="gallery">
+            <!-- ВАЖНО: Положите файлы Скрин2.png, Скрин3.png, Скрин4.png в папку images -->
+            <div class="gallery-item">
+                <img src="images/Скрин2.png" alt="Скриншот 2">
+            </div>
+            <div class="gallery-item">
+                <img src="images/Скрин3.png" alt="Скриншот 3">
+            </div>
+            <div class="gallery-item">
+                <img src="images/Скрин4.png" alt="Скриншот 4">
+            </div>
+        </section>
+
+        <div class="btn-container">
+            <a href="https://drive.google.com/drive/folders/1kvaP4U6cP9uF8cobMV796djFgRNLWd8z" target="_blank" class="btn" id="downloadBtn">📥 Скачать APK (Android)</a>
+            
+            <!-- Секретная кнопка -->
+            <div class="secret-btn-wrapper" id="secretWrapper">
+                <button class="btn btn-secret" id="secretGameBtn">🎮 Секретная игра</button>
+            </div>
+        </div>
+
+        <div class="socials">
+            <a href="https://t.me/Zentora201w" target="_blank" class="social-btn">📱 Telegram</a>
+            <a href="https://www.tiktok.com/@zentora253?_r=1&_t=ZN-97gDRsF89Ru" target="_blank" class="social-btn">🎵 TikTok</a>
+        </div>
+
+        <div class="support-email">
+            <p>Поддержка: <a href="mailto:zentoraofficial0@gmail.com">zentoraofficial0@gmail.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        // ===== ГЕНЕРАЦИЯ ЧАСТИЦ =====
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 4 + 2;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = Math.random() * 15 + 10 + 's';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            particleContainer.appendChild(p);
+        }
+
+        // ===== ЗВУКИ (fallback, если нет файлов) =====
+        class SoundManager {
+            constructor() {
+                this.bgm = null;
+                this.isPlaying = false;
+                try {
+                    this.bgm = new Audio('sounds/bgm.mp3');
+                    this.bgm.loop = true;
+                    this.bgm.volume = 0.3;
+                } catch(e) { console.log("Фоновая музыка не найдена"); }
+            }
+            playClick() {
+                try {
+                    const click = new Audio('sounds/click.mp3');
+                    click.volume = 0.5;
+                    click.play().catch(()=>{});
+                } catch(e) {}
+            }
+            playSecret() {
+                try {
+                    const s = new Audio('sounds/secret.mp3');
+                    s.play().catch(()=>{});
+                } catch(e) {}
+            }
+            startBGM() {
+                if(this.bgm && !this.isPlaying) {
+                    this.bgm.play().then(() => { this.isPlaying = true; }).catch(()=>{});
+                }
+            }
+        }
+        const sound = new SoundManager();
+
+        // ===== СЕКРЕТКА (Клик по логотипу) =====
+        const logo = document.getElementById('logoClick');
+        const secretWrapper = document.getElementById('secretWrapper');
+        let secretUnlocked = false;
+
+        logo.addEventListener('click', () => {
+            sound.playClick();
+            sound.startBGM(); // Запускаем музыку при первом клике
+            if (!secretUnlocked) {
+                secretUnlocked = true;
+                sound.playSecret();
+                secretWrapper.classList.add('active');
+                // Небольшая вибрация для пк (или эффект)
+                document.body.style.transition = '0.1s';
+                document.body.style.backgroundColor = '#2a1a6e';
+                setTimeout(() => {
+                    document.body.style.backgroundColor = '';
+                }, 200);
+            }
+        });
+
+        // ===== ОТКРЫТИЕ FLAPPY BIRD =====
+        const modal = document.getElementById('gameModal');
+        const secretBtn = document.getElementById('secretGameBtn');
+        const closeModal = document.getElementById('closeModalBtn');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const restartBtn = document.getElementById('restartGameBtn');
+
+        function openGame() {
+            sound.playClick();
+            modal.classList.add('active');
+            initGame();
+        }
+
+        secretBtn.addEventListener('click', openGame);
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+            cancelAnimationFrame(gameLoopId);
+        });
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                cancelAnimationFrame(gameLoopId);
+            }
+        });
+
+        // ===== ЛОГИКА FLAPPY BIRD (Мини-игра) =====
+        let bird = { x: 50, y: 150, width: 20, height: 20 };
+        let pipes = [];
+        let gravity = 0.4; // УМЕНЬШИЛ ГРАВИТАЦИЮ (было 0.6, стало 0.4)
+        let jumpPower = -8;
+        let velocity = 0;
+        let gameRunning = false;
+        let score = 0;
+        let gameLoopId;
+
+        function initGame() {
+            bird.y = 150;
+            velocity = 0;
+            pipes = [];
+            score = 0;
+            gameRunning = true;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updateGame();
+        }
+
+        function jump() {
+            if (gameRunning) {
+                velocity = jumpPower;
+                // Звук прыжка (тихий писк)
+                try {
+                    const jumpSound = new Audio('data:audio/wav;base64,UklGRlwAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVoAAACAgICAf39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f39/f38=');
+                    jumpSound.volume = 0.2;
+                    jumpSound.play().catch(()=>{});
+                } catch(e) {}
+            }
+        }
+
+        function updateGame() {
+            if (!gameRunning) return;
+            
+            // Гравитация
+            velocity += gravity;
+            bird.y += velocity;
+
+            // Потолок и пол
+            if (bird.y + bird.height > canvas.height || bird.y < 0) {
+                gameOver();
+                return;
+            }
+
+            // Трубы
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 200) {
+                let gap = Math.random() * (canvas.height - 150) + 50;
+                let pipeWidth = 30;
+                pipes.push({
+                    x: canvas.width,
+                    topHeight: gap - 100,
+                    bottomY: gap + 100,
+                    width: pipeWidth,
+                    scored: false
+                });
+            }
+
+            // Движение труб и коллизия
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                let p = pipes[i];
+                p.x -= 2;
+
+                // Очки
+                if (!p.scored && p.x + p.width < bird.x) {
+                    p.scored = true;
+                    score++;
+                }
+
+                // Проверка столкновения
+                if (bird.x < p.x + p.width && bird.x + bird.width > p.x) {
+                    if (bird.y < p.topHeight || bird.y + bird.height > p.bottomY) {
+                        gameOver();
+                        return;
+                    }
+                }
+
+                if (p.x + p.width < 0) {
+                    pipes.splice(i, 1);
+                }
+            }
+
+            drawGame();
+            gameLoopId = requestAnimationFrame(updateGame);
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#33cc33';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем трубы
+            ctx.fillStyle = '#008000';
+            pipes.forEach(p => {
+                ctx.fillRect(p.x, 0, p.width, p.topHeight);
+                ctx.fillRect(p.x, p.bottomY, p.width, canvas.height - p.bottomY);
+            });
+
+            // Рисуем птичку (Zentora стиль)
+            ctx.fillStyle = '#ffcc00';
+            ctx.beginPath();
+            ctx.arc(bird.x + bird.width/2, bird.y + bird.height/2, bird.width/2, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(bird.x + 12, bird.y + 8, 3, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(bird.x + 13, bird.y + 9, 1.5, 0, Math.PI*2);
+            ctx.fill();
+
+            // Счет
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.fillText('Счет: ' + score, 10, 30);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillSty
